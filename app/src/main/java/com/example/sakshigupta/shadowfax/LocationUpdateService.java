@@ -49,21 +49,23 @@ public class LocationUpdateService extends IntentService {
                 null,
                 null,
                 null);
-        if (cursor == null && cursor.getCount() == 0) {
+        if (!(cursor.moveToFirst()) || (cursor.getCount() ==0)) {
             insertLocationDetailsIntoDb();
             sendLocationDetailsToServer();
-        }
-        else {
-            if (cursor != null && cursor.getCount() > 0) {
-                cursor.moveToLast();
-                double previousLat = cursor.getDouble(cursor.getColumnIndex("latitude"));
-                double previousLong = cursor.getDouble(cursor.getColumnIndex("longitude"));
-                Float distance = distFrom(previousLat, previousLong, latitude, longitude);
-                if (distance > 100) {
-                    insertLocationDetailsIntoDb();
-                    sendLocationDetailsToServer();
-                }
+            cursor.close();
+        } else {
+            cursor.moveToLast();
+            double previousLat = cursor.getDouble(cursor.getColumnIndex("latitude"));
+            double previousLong = cursor.getDouble(cursor.getColumnIndex("longitude"));
+            Float distance = distFrom(previousLat, previousLong, latitude, longitude);
+            if (distance > 100) {
+                insertLocationDetailsIntoDb();
+                sendLocationDetailsToServer();
             }
+            else{
+                //No uploading required since distance between previous uploaded location and current location is less than 100m
+            }
+            cursor.close();
         }
     }
 
@@ -77,7 +79,7 @@ public class LocationUpdateService extends IntentService {
         return locationA.distanceTo(locationB);
     }
 
-    private void insertLocationDetailsIntoDb() {
+    public void insertLocationDetailsIntoDb() {
 
         ContentValues values = new ContentValues();
         values.put(LocationContract.UserLocationDetails.COLUMN_LATITUDE, latitude);
@@ -87,7 +89,6 @@ public class LocationUpdateService extends IntentService {
         values.put(LocationContract.UserLocationDetails.COLUMN_USER_DEVICE_ID, deviceId);
 
         getContentResolver().insert(LocationContract.UserLocationDetails.CONTENT_URI, values);
-
     }
 
     private void sendLocationDetailsToServer() {

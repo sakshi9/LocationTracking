@@ -3,6 +3,7 @@ package com.example.sakshigupta.shadowfax.Data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by sakshigupta on 03/01/16.
@@ -19,11 +20,9 @@ public class LocationDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //Version 1 tables
-
         final String SQL_CREATE_USER_LOCATION_DETAILS_TABLE = "CREATE TABLE IF NOT EXISTS " +
                 LocationContract.UserLocationDetails.TABLE_NAME + "(" +
-                LocationContract.UserLocationDetails._ID + " INTEGER PRIMARY KEY, " +
+                LocationContract.UserLocationDetails._ID + " INTEGER AUTO_INCREMENT PRIMARY KEY, " +
                 LocationContract.UserLocationDetails.COLUMN_LATITUDE + " DOUBLE, " +
                 LocationContract.UserLocationDetails.COLUMN_LONGITUDE + " DOUBLE, " +
                 LocationContract.UserLocationDetails.COLUMN_TIMESTAMP + " TEXT, " +
